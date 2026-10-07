@@ -4,6 +4,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import OnboardingScreen from '../screens/OnboardingScreen';
+import LoginScreen from '../screens/LoginScreen';
+import SignupScreen from '../screens/SignupScreen';
 import HomeScreen from '../screens/HomeScreen';
 import RecipeDetailScreen from '../screens/RecipeDetailScreen';
 import CookModeScreen from '../screens/CookModeScreen';
@@ -15,6 +17,7 @@ import ChefApplicationStatusScreen from '../screens/ChefApplicationStatusScreen'
 import ChefDashboardScreen from '../screens/ChefDashboardScreen';
 import UploadRecipeScreen from '../screens/UploadRecipeScreen';
 import { colors } from '../theme/colors';
+import { useAppStore } from '../store/useAppStore';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -37,37 +40,48 @@ function MainTabs() {
 }
 
 export default function RootNavigator() {
+  const isAuthenticated = useAppStore((s) => s.isAuthenticated);
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="MainTabs" component={MainTabs} />
-        <Stack.Screen
-          name="RecipeDetail"
-          component={RecipeDetailScreen}
-          options={{ headerShown: true, title: '' }}
-        />
-        <Stack.Screen name="CookMode" component={CookModeScreen} />
-        <Stack.Screen
-          name="BecomeChef"
-          component={BecomeChefScreen}
-          options={{ headerShown: true, title: 'Become a Chef' }}
-        />
-        <Stack.Screen
-          name="ChefApplicationStatus"
-          component={ChefApplicationStatusScreen}
-          options={{ headerShown: true, title: 'Chef Application' }}
-        />
-        <Stack.Screen
-          name="ChefDashboard"
-          component={ChefDashboardScreen}
-          options={{ headerShown: true, title: 'My Kitchen' }}
-        />
-        <Stack.Screen
-          name="UploadRecipe"
-          component={UploadRecipeScreen}
-          options={{ headerShown: true, title: 'New Recipe' }}
-        />
+        {!isAuthenticated ? (
+          <>
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Signup" component={SignupScreen} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="MainTabs" component={MainTabs} />
+            <Stack.Screen
+              name="RecipeDetail"
+              component={RecipeDetailScreen}
+              options={{ headerShown: true, title: '' }}
+            />
+            <Stack.Screen name="CookMode" component={CookModeScreen} />
+            <Stack.Screen
+              name="BecomeChef"
+              component={BecomeChefScreen}
+              options={{ headerShown: true, title: 'Become a Chef' }}
+            />
+            <Stack.Screen
+              name="ChefApplicationStatus"
+              component={ChefApplicationStatusScreen}
+              options={{ headerShown: true, title: 'Chef Application' }}
+            />
+            <Stack.Screen
+              name="ChefDashboard"
+              component={ChefDashboardScreen}
+              options={{ headerShown: true, title: 'My Kitchen' }}
+            />
+            <Stack.Screen
+              name="UploadRecipe"
+              component={UploadRecipeScreen}
+              options={{ headerShown: true, title: 'New Recipe' }}
+            />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
