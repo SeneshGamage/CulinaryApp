@@ -16,6 +16,7 @@ import BecomeChefScreen from '../screens/BecomeChefScreen';
 import ChefApplicationStatusScreen from '../screens/ChefApplicationStatusScreen';
 import ChefDashboardScreen from '../screens/ChefDashboardScreen';
 import UploadRecipeScreen from '../screens/UploadRecipeScreen';
+import DownloadRecipesScreen from '../screens/DownloadRecipesScreen';
 import { colors } from '../theme/colors';
 import { useAppStore } from '../store/useAppStore';
 
@@ -60,6 +61,11 @@ export default function RootNavigator() {
               options={{ headerShown: true, title: '' }}
             />
             <Stack.Screen name="CookMode" component={CookModeScreen} />
+            <Stack.Screen
+              name="DownloadRecipes"
+              component={DownloadRecipesScreen}
+              options={{ headerShown: true, title: 'Get More Recipes' }}
+            />
             <Stack.Screen
               name="BecomeChef"
               component={BecomeChefScreen}
