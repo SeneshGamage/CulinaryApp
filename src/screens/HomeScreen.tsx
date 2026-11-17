@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import RecipeCard from '../components/RecipeCard';
 import { colors, spacing, radius } from '../theme/colors';
@@ -14,6 +14,9 @@ export default function HomeScreen({ navigation }: any) {
     <SafeAreaView style={styles.container}>
       <View style={styles.topbar}>
         <Text style={styles.brand}>ChefGuru</Text>
+        <Pressable onPress={() => navigation.navigate('DownloadRecipes')}>
+          <Text style={styles.getMore}>Get More Recipes</Text>
+        </Pressable>
       </View>
       <ScrollView contentContainerStyle={{ padding: spacing.md }}>
         <TextInput
@@ -45,8 +48,12 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.line,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   brand: { fontSize: 18, fontWeight: '700', color: colors.ink },
+  getMore: { fontSize: 11.5, fontWeight: '600', color: colors.orangeDeep },
   search: {
     height: 44,
     borderRadius: radius.md,
