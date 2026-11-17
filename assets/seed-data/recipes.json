@@ -1,0 +1,60 @@
+[
+  {
+    "id": "seed-001",
+    "title": "Miso Glazed Salmon",
+    "cookTimeMinutes": 25,
+    "difficulty": "Easy",
+    "servings": 2,
+    "ingredients": [
+      { "name": "Salmon fillet", "amount": "2 pcs" },
+      { "name": "White miso paste", "amount": "2 tbsp" },
+      { "name": "Mirin", "amount": "1 tbsp" },
+      { "name": "Soy sauce", "amount": "1 tbsp" }
+    ],
+    "steps": [
+      { "instruction": "Preheat the pan over medium heat.", "timerSeconds": null },
+      { "instruction": "Pat the salmon dry and season lightly.", "timerSeconds": null },
+      { "instruction": "Whisk miso, mirin and soy sauce, then brush over the salmon.", "timerSeconds": null },
+      { "instruction": "Sear skin-side down for 4 minutes.", "timerSeconds": 240 },
+      { "instruction": "Flip and cook 2 more minutes, then rest.", "timerSeconds": 120 }
+    ]
+  },
+  {
+    "id": "seed-002",
+    "title": "Brown Butter Pasta",
+    "cookTimeMinutes": 18,
+    "difficulty": "Easy",
+    "servings": 2,
+    "ingredients": [
+      { "name": "Spaghetti", "amount": "200 g" },
+      { "name": "Butter", "amount": "60 g" },
+      { "name": "Parmesan, grated", "amount": "40 g" },
+      { "name": "Sage leaves", "amount": "6" }
+    ],
+    "steps": [
+      { "instruction": "Boil pasta until al dente.", "timerSeconds": 600 },
+      { "instruction": "Melt butter in a pan until it turns golden brown and nutty.", "timerSeconds": 180 },
+      { "instruction": "Add sage leaves and fry until crisp.", "timerSeconds": 60 },
+      { "instruction": "Toss pasta in the brown butter with parmesan.", "timerSeconds": null }
+    ]
+  },
+  {
+    "id": "seed-003",
+    "title": "Ceylon Fish Curry",
+    "cookTimeMinutes": 35,
+    "difficulty": "Intermediate",
+    "servings": 4,
+    "ingredients": [
+      { "name": "White fish fillets", "amount": "500 g" },
+      { "name": "Coconut milk", "amount": "400 ml" },
+      { "name": "Curry leaves", "amount": "10" },
+      { "name": "Tamarind paste", "amount": "1 tbsp" }
+    ],
+    "steps": [
+      { "instruction": "Marinate fish with turmeric and salt.", "timerSeconds": null },
+      { "instruction": "Sauté curry leaves and spices until fragrant.", "timerSeconds": 120 },
+      { "instruction": "Add coconut milk and tamarind, simmer.", "timerSeconds": 600 },
+      { "instruction": "Add fish and cook gently until done.", "timerSeconds": 480 }
+    ]
+  }
+]

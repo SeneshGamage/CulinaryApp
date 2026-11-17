@@ -12,11 +12,11 @@ export default function OnboardingScreen({ navigation }: any) {
       <Text style={styles.subtitle}>
         Step-by-step tutorials and an AI sous-chef in your pocket.
       </Text>
-      <PrimaryButton label="Get Started" onPress={() => navigation.replace('MainTabs')} />
+      <PrimaryButton label="Get Started" onPress={() => navigation.navigate('Signup')} />
       <PrimaryButton
         label="I already have an account"
         variant="ghost"
-        onPress={() => navigation.replace('MainTabs')}
+        onPress={() => navigation.navigate('Login')}
       />
     </SafeAreaView>
   );
