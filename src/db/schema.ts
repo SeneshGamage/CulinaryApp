@@ -31,6 +31,12 @@ CREATE TABLE IF NOT EXISTS favorites (
   saved_at INTEGER DEFAULT (strftime('%s','now'))
 );
 
+CREATE TABLE IF NOT EXISTS cook_progress (
+  recipe_id TEXT PRIMARY KEY NOT NULL,
+  step_index INTEGER NOT NULL DEFAULT 0,
+  updated_at INTEGER DEFAULT (strftime('%s','now'))
+);
+
 CREATE TABLE IF NOT EXISTS app_meta (
   key TEXT PRIMARY KEY NOT NULL,
   value TEXT
