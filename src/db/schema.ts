@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS favorites (
 );
 
 CREATE TABLE IF NOT EXISTS cook_progress (
-  recipe_id TEXT PRIMARY KEY NOT NULL,
+  recipe_id TEXT PRIMARY KEY NOT NULL REFERENCES recipes(id) ON DELETE CASCADE, -- Added foreign key
   step_index INTEGER NOT NULL DEFAULT 0,
   updated_at INTEGER DEFAULT (strftime('%s','now'))
 );
