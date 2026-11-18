@@ -112,9 +112,9 @@ export async function getRecipeById(id: string): Promise<FullRecipe | null> {
     const r = await db.getFirstAsync<{
       id: string;
       title: string;
-      cook_time_minutes: number;
-      difficulty: string;
-      servings: number;
+      cook_time_minutes: number | null;
+      difficulty: string | null;
+      servings: number | null;
     }>('SELECT id, title, cook_time_minutes, difficulty, servings FROM recipes WHERE id = ?', [id]);
 
     if (!r) {
@@ -122,32 +122,59 @@ export async function getRecipeById(id: string): Promise<FullRecipe | null> {
       return;
     }
 
+    // Normalize nullable values
+    const cookTimeMinutes = r.cook_time_minutes ?? 0;
+    const difficulty = r.difficulty ?? 'unknown';
+    const servings = r.servings ?? 1;
+
     // Fetch the ingredients
-    const ingredients = await db.getAllAsync<{ name: string; amount: string }>(
+    const ingredients = await db.getAllAsync<{ name: string; amount: string | null }>(
       'SELECT name, amount FROM ingredients WHERE recipe_id = ? ORDER BY sort_order',
       [id],
+    ).then(rows =>
+      rows.map(ing => ({
+        name: ing.name,
+        amount: ing.amount ?? 'unknown',
+      })),
     );
 
     // Fetch the steps
     const steps = await db.getAllAsync<{ instruction: string; timer_seconds: number | null }>(
       'SELECT instruction, timer_seconds FROM steps WHERE recipe_id = ? ORDER BY step_number',
       [id],
+    ).then(rows =>
+      rows.map(step => ({
+        instruction: step.instruction,
+        timerSeconds: step.timer_seconds ?? 0,
+      })),
     );
 
     // Assign the full recipe to the result variable
     result = {
       id: r.id,
       title: r.title,
-      cookTimeMinutes: r.cook_time_minutes,
-      difficulty: r.difficulty,
-      servings: r.servings,
+      cookTimeMinutes,
+      difficulty,
+      servings,
       ingredients,
-      steps: steps.map((s) => ({ instruction: s.instruction, timerSeconds: s.timer_seconds })),
+      steps,
     };
   });
   return result;
 }
 
+/** Lists favorite recipes with normalized values. */
+export async function listFavoriteRecipes(): Promise<LocalRecipeSummary[]> {
+  const db = await getDb();
+  return db.getAllAsync<LocalRecipeSummary>(
+    `SELECT r.id, r.title, COALESCE(r.cook_time_minutes, 0) AS cook_time_minutes,
+            COALESCE(r.difficulty, 'unknown') AS difficulty, r.source
+     FROM favorites f JOIN recipes r ON r.id = f.recipe_id
+     ORDER BY f.saved_at DESC`,
+  );
+}
+
+// Checks if a recipe is marked as a favorite. Returns true if it is, false otherwise.
 export async function isFavorite(recipeId: string): Promise<boolean> {
   const db = await getDb();
   const row = await db.getFirstAsync('SELECT 1 FROM favorites WHERE recipe_id = ?', [recipeId]);
@@ -185,7 +212,7 @@ export async function toggleFavorite(recipeId: string): Promise<boolean> {
   return result;
 }
 
-export async function listFavoriteRecipes(): Promise<LocalRecipeSummary[]> {
+/*export async function listFavoriteRecipes(): Promise<LocalRecipeSummary[]> {
   const db = await getDb();
   return db.getAllAsync<LocalRecipeSummary>(
     `SELECT r.id, r.title, r.cook_time_minutes, r.difficulty, r.source
@@ -193,7 +220,9 @@ export async function listFavoriteRecipes(): Promise<LocalRecipeSummary[]> {
      ORDER BY f.saved_at DESC`,
   );
 }
+*/
 
+// Retrieves the cook progress for a given recipe. Returns 0 if no progress is found.
 export async function getCookProgress(recipeId: string): Promise<number> {
   const db = await getDb();
   const row = await db.getFirstAsync<{ step_index: number }>(
@@ -203,15 +232,33 @@ export async function getCookProgress(recipeId: string): Promise<number> {
   return row?.step_index ?? 0;
 }
 
+// Saves the cook progress for a given recipe. If the step index is invalid (negative or greater than the number of steps), it throws an error.
 export async function saveCookProgress(recipeId: string, stepIndex: number): Promise<void> {
   const db = await getDb();
+
+  // Validate the step index
+  const stepCount = await db.getFirstAsync<{ count: number }>(
+    'SELECT COUNT(*) AS count FROM steps WHERE recipe_id = ?',
+    [recipeId],
+  ).then(row => row?.count ?? 0);
+
+  if (stepIndex < 0 || stepIndex >= stepCount) {
+    throw new Error(`Invalid step index: ${stepIndex}. Must be between 0 and ${stepCount - 1}.`);
+  }
+
   await db.runAsync(
-    `INSERT INTO cook_progress (recipe_id, step_index) VALUES (?, ?)
-     ON CONFLICT(recipe_id) DO UPDATE SET step_index = excluded.step_index, updated_at = strftime('%s','now')`,
+    `INSERT INTO cook_progress (recipe_id, step_index, updated_at)
+     VALUES (?, ?, strftime('%s','now'))
+     ON CONFLICT(recipe_id) DO UPDATE SET
+       step_index = excluded.step_index,
+       updated_at = excluded.updated_at
+     WHERE excluded.updated_at > cook_progress.updated_at`,
     [recipeId, stepIndex],
   );
 }
 
+
+// Clears the cook progress for a given recipe. This is useful when the recipe steps have changed.
 export async function clearCookProgress(recipeId: string): Promise<void> {
   const db = await getDb();
   await db.runAsync('DELETE FROM cook_progress WHERE recipe_id = ?', [recipeId]);
