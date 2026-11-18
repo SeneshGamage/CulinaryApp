@@ -37,6 +37,15 @@ export async function insertRecipeLocally(recipe: FullRecipe, source: RecipeSour
       [recipe.id, recipe.title, recipe.cookTimeMinutes, recipe.difficulty, recipe.servings, source],
     );
 
+    // Reset cook progress if the number of steps has changed
+    const existingSteps = await db.getAllAsync<{ step_number: number }>(
+      'SELECT step_number FROM steps WHERE recipe_id = ? ORDER BY step_number',
+      [recipe.id],
+    );
+    if (existingSteps.length !== recipe.steps.length) {
+      await db.runAsync('DELETE FROM cook_progress WHERE recipe_id = ?', [recipe.id]);
+    }
+
     await db.runAsync('DELETE FROM ingredients WHERE recipe_id = ?', [recipe.id]);
     for (let i = 0; i < recipe.ingredients.length; i++) {
       const ing = recipe.ingredients[i];
@@ -73,14 +82,18 @@ export async function getLocalRecipeIds(): Promise<Set<string>> {
 /** Removes a downloaded recipe to free space. Refuses to remove seed/chef_upload recipes. */
 export async function removeDownloadedRecipe(recipeId: string): Promise<void> {
   const db = await getDb();
-  const row = await db.getFirstAsync<{ source: RecipeSource }>(
-    'SELECT source FROM recipes WHERE id = ?',
-    [recipeId],
-  );
-  if (!row || row.source !== 'downloaded') {
-    throw new Error('Only downloaded recipes can be removed.');
-  }
+
   await db.withTransactionAsync(async () => {
+    // Recheck the source inside the transaction
+    const row = await db.getFirstAsync<{ source: RecipeSource }>(
+      'SELECT source FROM recipes WHERE id = ?',
+      [recipeId],
+    );
+
+    if (!row || row.source !== 'downloaded') {
+      throw new Error('Only downloaded recipes can be removed.');
+    }
+
     await db.runAsync('DELETE FROM favorites WHERE recipe_id = ?', [recipeId]);
     await db.runAsync('DELETE FROM cook_progress WHERE recipe_id = ?', [recipeId]);
     await db.runAsync('DELETE FROM ingredients WHERE recipe_id = ?', [recipeId]);
