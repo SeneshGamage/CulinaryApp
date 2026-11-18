@@ -26,8 +26,14 @@ export async function insertRecipeLocally(recipe: FullRecipe, source: RecipeSour
 
   await db.withTransactionAsync(async () => {
     await db.runAsync(
-      `INSERT OR REPLACE INTO recipes (id, title, cook_time_minutes, difficulty, servings, source)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO recipes (id, title, cook_time_minutes, difficulty, servings, source)
+       VALUES (?, ?, ?, ?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET
+         title = excluded.title,
+         cook_time_minutes = excluded.cook_time_minutes,
+         difficulty = excluded.difficulty,
+         servings = excluded.servings,
+         source = excluded.source`,
       [recipe.id, recipe.title, recipe.cookTimeMinutes, recipe.difficulty, recipe.servings, source],
     );
 
