@@ -105,33 +105,47 @@ export async function removeDownloadedRecipe(recipeId: string): Promise<void> {
 /** Fetches a full recipe by ID, including ingredients and steps. Returns null if not found. */
 export async function getRecipeById(id: string): Promise<FullRecipe | null> {
   const db = await getDb();
-  const r = await db.getFirstAsync<{
-    id: string;
-    title: string;
-    cook_time_minutes: number;
-    difficulty: string;
-    servings: number;
-  }>('SELECT id, title, cook_time_minutes, difficulty, servings FROM recipes WHERE id = ?', [id]);
-  if (!r) return null;
 
-  const ingredients = await db.getAllAsync<{ name: string; amount: string }>(
-    'SELECT name, amount FROM ingredients WHERE recipe_id = ? ORDER BY sort_order',
-    [id],
-  );
-  const steps = await db.getAllAsync<{ instruction: string; timer_seconds: number | null }>(
-    'SELECT instruction, timer_seconds FROM steps WHERE recipe_id = ? ORDER BY step_number',
-    [id],
-  );
+  let result: FullRecipe | null = null;
+  await db.withTransactionAsync(async () => {
+    // Fetch the main recipe details
+    const r = await db.getFirstAsync<{
+      id: string;
+      title: string;
+      cook_time_minutes: number;
+      difficulty: string;
+      servings: number;
+    }>('SELECT id, title, cook_time_minutes, difficulty, servings FROM recipes WHERE id = ?', [id]);
 
-  return {
-    id: r.id,
-    title: r.title,
-    cookTimeMinutes: r.cook_time_minutes,
-    difficulty: r.difficulty,
-    servings: r.servings,
-    ingredients,
-    steps: steps.map((s) => ({ instruction: s.instruction, timerSeconds: s.timer_seconds })),
-  };
+    if (!r) {
+      result = null;
+      return;
+    }
+
+    // Fetch the ingredients
+    const ingredients = await db.getAllAsync<{ name: string; amount: string }>(
+      'SELECT name, amount FROM ingredients WHERE recipe_id = ? ORDER BY sort_order',
+      [id],
+    );
+
+    // Fetch the steps
+    const steps = await db.getAllAsync<{ instruction: string; timer_seconds: number | null }>(
+      'SELECT instruction, timer_seconds FROM steps WHERE recipe_id = ? ORDER BY step_number',
+      [id],
+    );
+
+    // Assign the full recipe to the result variable
+    result = {
+      id: r.id,
+      title: r.title,
+      cookTimeMinutes: r.cook_time_minutes,
+      difficulty: r.difficulty,
+      servings: r.servings,
+      ingredients,
+      steps: steps.map((s) => ({ instruction: s.instruction, timerSeconds: s.timer_seconds })),
+    };
+  });
+  return result;
 }
 
 export async function isFavorite(recipeId: string): Promise<boolean> {
@@ -143,12 +157,32 @@ export async function isFavorite(recipeId: string): Promise<boolean> {
 /** Toggles the favorite flag and returns the new state. */
 export async function toggleFavorite(recipeId: string): Promise<boolean> {
   const db = await getDb();
-  if (await isFavorite(recipeId)) {
-    await db.runAsync('DELETE FROM favorites WHERE recipe_id = ?', [recipeId]);
-    return false;
-  }
-  await db.runAsync('INSERT INTO favorites (recipe_id) VALUES (?)', [recipeId]);
-  return true;
+
+  let result: boolean = false;
+
+  await db.withTransactionAsync(async () => {
+    // Check if the recipe is currently a favorite
+    const isCurrentlyFavorite = await db.getFirstAsync<{ recipe_id: string }>(
+      'SELECT recipe_id FROM favorites WHERE recipe_id = ?',
+      [recipeId],
+    );
+
+    if (isCurrentlyFavorite) {
+      // Remove from favorites if it is already a favorite
+      await db.runAsync('DELETE FROM favorites WHERE recipe_id = ?', [recipeId]);
+      result = false;
+    } else {
+      // Add to favorites if it is not a favorite
+      await db.runAsync(
+        `INSERT INTO favorites (recipe_id, saved_at) VALUES (?, strftime('%s','now'))
+         ON CONFLICT(recipe_id) DO NOTHING`,
+        [recipeId],
+      );
+      result = true;
+    }
+  });
+
+  return result;
 }
 
 export async function listFavoriteRecipes(): Promise<LocalRecipeSummary[]> {
