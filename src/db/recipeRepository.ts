@@ -80,5 +80,11 @@ export async function removeDownloadedRecipe(recipeId: string): Promise<void> {
   if (!row || row.source !== 'downloaded') {
     throw new Error('Only downloaded recipes can be removed.');
   }
-  await db.runAsync('DELETE FROM recipes WHERE id = ?', [recipeId]);
+  await db.withTransactionAsync(async () => {
+    await db.runAsync('DELETE FROM favorites WHERE recipe_id = ?', [recipeId]);
+    await db.runAsync('DELETE FROM cook_progress WHERE recipe_id = ?', [recipeId]);
+    await db.runAsync('DELETE FROM ingredients WHERE recipe_id = ?', [recipeId]);
+    await db.runAsync('DELETE FROM steps WHERE recipe_id = ?', [recipeId]);
+    await db.runAsync('DELETE FROM recipes WHERE id = ?', [recipeId]);
+  });
 }
