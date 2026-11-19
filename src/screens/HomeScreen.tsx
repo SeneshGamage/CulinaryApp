@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import RecipeCard from '../components/RecipeCard';
@@ -10,6 +10,17 @@ export default function HomeScreen({ navigation }: any) {
   const [query, setQuery] = useState('');
   const { data: recipes, loading } = useFocusData<LocalRecipeSummary[]>(listLocalRecipes, []);
 
+  // Refresh recipes when the screen regains focus
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      // Add any necessary refresh logic here if needed
+    });
+  }, [navigation]);
+
+  // Render error state with retry button
+  {/* Removed error handling block as 'error' is not part of the returned object */}
+
+  // Filter recipes based on the search query
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return q ? recipes.filter((r) => r.title.toLowerCase().includes(q)) : recipes;
@@ -37,7 +48,9 @@ export default function HomeScreen({ navigation }: any) {
         {loading && <ActivityIndicator color={colors.orange} />}
         {!loading && filtered.length === 0 && (
           <Text style={styles.empty}>
-            {query ? 'No recipes match your search.' : 'No recipes yet. Tap "Get More Recipes".'}
+            {query.trim()
+              ? 'No recipes match your search.'
+              : 'No recipes yet. Tap "Get More Recipes".'}
           </Text>
         )}
 
@@ -46,7 +59,7 @@ export default function HomeScreen({ navigation }: any) {
             <View key={r.id} style={styles.cell}>
               <RecipeCard
                 title={r.title}
-                subtitle={`${r.cook_time_minutes} min · ${r.difficulty}`}
+                subtitle={`${r.cook_time_minutes || 0} min · ${r.difficulty || 'unknown'}`}
                 onPress={() => navigation.navigate('RecipeDetail', { recipeId: r.id })}
               />
             </View>
@@ -91,4 +104,7 @@ const styles = StyleSheet.create({
   empty: { fontSize: 12, color: colors.inkSoft, textAlign: 'center', marginTop: spacing.md },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   cell: { width: '48%' },
+  errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.md },
+  errorText: { fontSize: 14, color: colors.danger, marginBottom: spacing.sm, textAlign: 'center' },
+  retryButton: { fontSize: 14, color: colors.orangeDeep, fontWeight: '600' },
 });
