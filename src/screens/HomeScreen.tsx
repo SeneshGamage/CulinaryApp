@@ -1,15 +1,20 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, Pressable } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import RecipeCard from '../components/RecipeCard';
 import { colors, spacing, radius } from '../theme/colors';
-
-const TRENDING = [
-  { title: 'Miso Glazed Salmon', subtitle: '25 min · Easy' },
-  { title: 'Brown Butter Pasta', subtitle: '18 min · Easy' },
-];
+import { listLocalRecipes, LocalRecipeSummary } from '../db/recipeRepository';
+import { useFocusData } from '../hooks/useFocusData';
 
 export default function HomeScreen({ navigation }: any) {
+  const [query, setQuery] = useState('');
+  const { data: recipes, loading } = useFocusData<LocalRecipeSummary[]>(listLocalRecipes, []);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return q ? recipes.filter((r) => r.title.toLowerCase().includes(q)) : recipes;
+  }, [recipes, query]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topbar}>
@@ -20,20 +25,31 @@ export default function HomeScreen({ navigation }: any) {
       </View>
       <ScrollView contentContainerStyle={{ padding: spacing.md }}>
         <TextInput
-          placeholder="Search recipes, ingredients…"
+          placeholder="Search recipes…"
           placeholderTextColor={colors.inkSoft}
           style={styles.search}
+          value={query}
+          onChangeText={setQuery}
         />
         <View style={styles.hero} />
-        <Text style={styles.sectionLabel}>Trending this week</Text>
-        <View style={styles.row}>
-          {TRENDING.map((r) => (
-            <RecipeCard
-              key={r.title}
-              title={r.title}
-              subtitle={r.subtitle}
-              onPress={() => navigation.navigate('RecipeDetail', { title: r.title })}
-            />
+        <Text style={styles.sectionLabel}>Your recipes</Text>
+
+        {loading && <ActivityIndicator color={colors.orange} />}
+        {!loading && filtered.length === 0 && (
+          <Text style={styles.empty}>
+            {query ? 'No recipes match your search.' : 'No recipes yet. Tap "Get More Recipes".'}
+          </Text>
+        )}
+
+        <View style={styles.grid}>
+          {filtered.map((r) => (
+            <View key={r.id} style={styles.cell}>
+              <RecipeCard
+                title={r.title}
+                subtitle={`${r.cook_time_minutes} min · ${r.difficulty}`}
+                onPress={() => navigation.navigate('RecipeDetail', { recipeId: r.id })}
+              />
+            </View>
           ))}
         </View>
       </ScrollView>
@@ -64,12 +80,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     color: colors.ink,
   },
-  hero: {
-    height: 130,
-    borderRadius: radius.md,
-    backgroundColor: colors.orange,
-    marginBottom: spacing.md,
-  },
+  hero: { height: 130, borderRadius: radius.md, backgroundColor: colors.orange, marginBottom: spacing.md },
   sectionLabel: {
     fontSize: 11,
     fontWeight: '600',
@@ -77,5 +88,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginBottom: spacing.sm,
   },
-  row: { flexDirection: 'row', gap: spacing.sm },
+  empty: { fontSize: 12, color: colors.inkSoft, textAlign: 'center', marginTop: spacing.md },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  cell: { width: '48%' },
 });
