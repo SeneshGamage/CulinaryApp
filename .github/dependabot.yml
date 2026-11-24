@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    ignore:
+      # Expo pins these to the SDK version. Update them with: npx expo install --fix
+      - dependency-name: expo
+      - dependency-name: expo-*
+      - dependency-name: react
+      - dependency-name: react-native
+      - dependency-name: react-native-*
+      - dependency-name: '@react-native-*/*'
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
