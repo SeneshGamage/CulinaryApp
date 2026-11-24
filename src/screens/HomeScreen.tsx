@@ -1,5 +1,13 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, Pressable, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TextInput,
+  Pressable,
+  ActivityIndicator,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import RecipeCard from '../components/RecipeCard';
 import { colors, spacing, radius } from '../theme/colors';
@@ -18,7 +26,9 @@ export default function HomeScreen({ navigation }: any) {
   }, [navigation]);
 
   // Render error state with retry button
-  {/* Removed error handling block as 'error' is not part of the returned object */}
+  {
+    /* Removed error handling block as 'error' is not part of the returned object */
+  }
 
   // Filter recipes based on the search query
   const filtered = useMemo(() => {
@@ -93,7 +103,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     color: colors.ink,
   },
-  hero: { height: 130, borderRadius: radius.md, backgroundColor: colors.orange, marginBottom: spacing.md },
+  hero: {
+    height: 130,
+    borderRadius: radius.md,
+    backgroundColor: colors.orange,
+    marginBottom: spacing.md,
+  },
   sectionLabel: {
     fontSize: 11,
     fontWeight: '600',

@@ -14,11 +14,7 @@ export default function PrimaryButton({ label, onPress, variant = 'primary', sty
   return (
     <Pressable
       onPress={onPress}
-      style={[
-        styles.base,
-        isGhost ? styles.ghost : styles.primary,
-        style,
-      ]}
+      style={[styles.base, isGhost ? styles.ghost : styles.primary, style]}
     >
       <Text style={isGhost ? styles.ghostText : styles.primaryText}>{label}</Text>
     </Pressable>

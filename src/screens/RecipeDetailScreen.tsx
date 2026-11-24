@@ -33,16 +33,27 @@ export default function RecipeDetailScreen({ route, navigation }: any) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
-  hero: { height: 150, borderRadius: radius.md, backgroundColor: colors.orange, marginBottom: spacing.md },
+  hero: {
+    height: 150,
+    borderRadius: radius.md,
+    backgroundColor: colors.orange,
+    marginBottom: spacing.md,
+  },
   title: { fontSize: 19, fontWeight: '700', color: colors.ink, marginBottom: 4 },
   meta: { fontSize: 12, color: colors.inkSoft, marginBottom: spacing.md },
   sectionLabel: {
-    fontSize: 11, fontWeight: '600', color: colors.inkSoft,
-    textTransform: 'uppercase', marginBottom: spacing.sm,
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.inkSoft,
+    textTransform: 'uppercase',
+    marginBottom: spacing.sm,
   },
   ingredientRow: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.line,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.line,
   },
   ingredientName: { fontSize: 13, color: colors.ink },
   ingredientAmount: { fontSize: 13, color: colors.inkSoft },

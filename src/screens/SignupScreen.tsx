@@ -38,9 +38,7 @@ export default function SignupScreen({ navigation }: any) {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Create your account</Text>
-      {!isOnline && (
-        <Text style={styles.offlineNotice}>You're offline — connect to sign up.</Text>
-      )}
+      {!isOnline && <Text style={styles.offlineNotice}>You're offline — connect to sign up.</Text>}
       <TextInput
         style={styles.field}
         placeholder="Email"
@@ -74,15 +72,34 @@ export default function SignupScreen({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.white, padding: spacing.lg, justifyContent: 'center' },
-  title: { fontSize: 22, fontWeight: '700', color: colors.ink, marginBottom: spacing.lg, textAlign: 'center' },
+  container: {
+    flex: 1,
+    backgroundColor: colors.white,
+    padding: spacing.lg,
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: colors.ink,
+    marginBottom: spacing.lg,
+    textAlign: 'center',
+  },
   offlineNotice: {
-    fontSize: 12, color: colors.pending, textAlign: 'center', marginBottom: spacing.md,
+    fontSize: 12,
+    color: colors.pending,
+    textAlign: 'center',
+    marginBottom: spacing.md,
   },
   field: {
-    height: 46, borderRadius: radius.md, backgroundColor: colors.cream,
-    borderWidth: 1, borderColor: colors.line, paddingHorizontal: spacing.md,
-    marginBottom: spacing.sm, color: colors.ink,
+    height: 46,
+    borderRadius: radius.md,
+    backgroundColor: colors.cream,
+    borderWidth: 1,
+    borderColor: colors.line,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.sm,
+    color: colors.ink,
   },
   error: { fontSize: 12, color: colors.danger, marginBottom: spacing.sm, textAlign: 'center' },
 });

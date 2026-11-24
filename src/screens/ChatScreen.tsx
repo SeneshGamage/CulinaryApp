@@ -10,7 +10,11 @@ interface Message {
 }
 
 const INITIAL: Message[] = [
-  { id: '1', from: 'bot', text: "Hey! I see you're cooking Miso Salmon — need a substitute for mirin?" },
+  {
+    id: '1',
+    from: 'bot',
+    text: "Hey! I see you're cooking Miso Salmon — need a substitute for mirin?",
+  },
   { id: '2', from: 'user', text: "Yes, I don't have any at home" },
   { id: '3', from: 'bot', text: 'No problem — use 1 tbsp rice vinegar + 1 tsp sugar instead.' },
 ];
@@ -71,12 +75,22 @@ const styles = StyleSheet.create({
   bubbleTextBot: { color: colors.ink, fontSize: 13 },
   bubbleTextUser: { color: colors.white, fontSize: 13 },
   inputRow: {
-    flexDirection: 'row', alignItems: 'center', padding: spacing.md,
-    borderTopWidth: 1, borderTopColor: colors.line, gap: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.line,
+    gap: spacing.sm,
   },
   input: {
-    flex: 1, height: 44, borderRadius: radius.pill, backgroundColor: colors.cream,
-    borderWidth: 1, borderColor: colors.line, paddingHorizontal: spacing.md, color: colors.ink,
+    flex: 1,
+    height: 44,
+    borderRadius: radius.pill,
+    backgroundColor: colors.cream,
+    borderWidth: 1,
+    borderColor: colors.line,
+    paddingHorizontal: spacing.md,
+    color: colors.ink,
   },
   sendBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.orange },
 });

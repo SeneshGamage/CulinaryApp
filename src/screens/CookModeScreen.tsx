@@ -24,7 +24,9 @@ export default function CookModeScreen({ navigation }: any) {
         ))}
       </View>
       <View style={{ padding: spacing.md, flex: 1 }}>
-        <Text style={styles.stepNum}>STEP {step + 1} OF {STEPS.length}</Text>
+        <Text style={styles.stepNum}>
+          STEP {step + 1} OF {STEPS.length}
+        </Text>
         <Text style={styles.stepText}>{STEPS[step]}</Text>
         <View style={styles.timer}>
           <Text style={styles.timerText}>04:12</Text>
@@ -57,10 +59,22 @@ const styles = StyleSheet.create({
   stepNum: { fontSize: 12, color: colors.orangeDeep, fontWeight: '600', marginBottom: spacing.sm },
   stepText: { fontSize: 17, lineHeight: 24, color: colors.ink, marginBottom: spacing.lg },
   timer: {
-    width: 110, height: 110, borderRadius: 55, borderWidth: 5, borderColor: colors.orange,
-    alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginBottom: spacing.lg,
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    borderWidth: 5,
+    borderColor: colors.orange,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginBottom: spacing.lg,
   },
   timerText: { fontSize: 20, fontWeight: '700', color: colors.ink },
   hero: { height: 90, borderRadius: radius.md, backgroundColor: colors.orange },
-  footer: { flexDirection: 'row', padding: spacing.md, borderTopWidth: 1, borderTopColor: colors.line },
+  footer: {
+    flexDirection: 'row',
+    padding: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.line,
+  },
 });

@@ -29,10 +29,27 @@ export default function ChefApplicationStatusScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.white, padding: spacing.lg, alignItems: 'center', justifyContent: 'center' },
-  hero: { width: '100%', height: 120, borderRadius: radius.md, backgroundColor: colors.orange, marginBottom: spacing.md },
+  container: {
+    flex: 1,
+    backgroundColor: colors.white,
+    padding: spacing.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hero: {
+    width: '100%',
+    height: 120,
+    borderRadius: radius.md,
+    backgroundColor: colors.orange,
+    marginBottom: spacing.md,
+  },
   title: { fontSize: 16, fontWeight: '700', color: colors.ink, marginBottom: spacing.sm },
-  badge: { paddingVertical: 4, paddingHorizontal: 12, borderRadius: radius.pill, marginBottom: spacing.md },
+  badge: {
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: radius.pill,
+    marginBottom: spacing.md,
+  },
   badgeText: { fontSize: 10, fontWeight: '700' },
   note: { fontSize: 12, color: colors.inkSoft, textAlign: 'center' },
 });
