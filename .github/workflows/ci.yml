@@ -13,6 +13,7 @@ concurrency:
 permissions:
   contents: read
 
+  
 jobs:
   checks:
     name: checks
@@ -25,10 +26,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Ensure .env is not committed
+      - name: Ensure no sensitive .env files are committed
         run: |
-          if git ls-files --error-unmatch .env >/dev/null 2>&1; then
-            echo "::error::.env is tracked by git. Remove it and rotate any keys inside."
+          if git ls-files --error-unmatch .env* >/dev/null 2>&1; then
+            echo "::error::.env is tracked by git. Remove them and rotate any keys inside."
             exit 1
           fi
 
@@ -54,4 +55,13 @@ jobs:
 
       - name: Expo Doctor (informational only)
         run: npx expo-doctor
-        continue-on-error: true
+        continue-on-error: true      
+        
+      - name: Publish OTA update to the production channel
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+          COMMIT_MSG: ${{ github.event.head_commit.message || 'manual run' }}
+        run: eas update --branch production --message "$COMMIT_MSG" --non-interactive
+
+      
