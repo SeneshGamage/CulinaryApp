@@ -22,10 +22,10 @@
       "favicon": "./assets/favicon.png"
     },
     "updates": {
-    "url": "https://u.expo.dev/<your-project-id>"
+      "url": "https://u.expo.dev/<your-project-id>"
     },
     "runtimeVersion": {
-    "policy": "sdkVersion"
+      "policy": "sdkVersion"
     },
     "plugins": ["expo-sqlite", "expo-secure-store"]
   }
