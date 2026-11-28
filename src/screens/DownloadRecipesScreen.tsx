@@ -4,7 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, radius } from '../theme/colors';
 import { useIsOnline } from '../hooks/useIsOnline';
 import { fetchCatalog, fetchFullRecipe, CatalogEntry } from '../services/catalogService';
-import { getLocalRecipeIds, insertRecipeLocally, removeDownloadedRecipe } from '../db/recipeRepository';
+import {
+  getLocalRecipeIds,
+  insertRecipeLocally,
+  removeDownloadedRecipe,
+} from '../db/recipeRepository';
 
 type DownloadState = 'idle' | 'downloading' | 'downloaded' | 'failed';
 
@@ -50,8 +54,12 @@ export default function DownloadRecipesScreen() {
   };
 
   const handleRemove = async (entry: CatalogEntry) => {
-    await removeDownloadedRecipe(entry.id);
-    setDownloadStates((prev) => ({ ...prev, [entry.id]: 'idle' }));
+    try {
+      await removeDownloadedRecipe(entry.id);
+      setDownloadStates((prev) => ({ ...prev, [entry.id]: 'idle' }));
+    } catch (e) {
+      console.error('Remove failed:', e);
+    }
   };
 
   if (!isOnline) {
@@ -74,7 +82,9 @@ export default function DownloadRecipesScreen() {
         <Text style={styles.title}>Get More Recipes</Text>
       </View>
 
-      {loadingCatalog && <ActivityIndicator color={colors.orange} style={{ marginTop: spacing.lg }} />}
+      {loadingCatalog && (
+        <ActivityIndicator color={colors.orange} style={{ marginTop: spacing.lg }} />
+      )}
       {catalogError ? <Text style={styles.error}>{catalogError}</Text> : null}
 
       <FlatList
@@ -122,18 +132,39 @@ const styles = StyleSheet.create({
   title: { fontSize: 17, fontWeight: '700', color: colors.ink },
   error: { fontSize: 12, color: colors.danger, textAlign: 'center', marginTop: spacing.md },
   row: {
-    flexDirection: 'row', alignItems: 'center', gap: spacing.sm,
-    paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.line,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.line,
   },
   thumb: { width: 46, height: 46, borderRadius: radius.sm, backgroundColor: '#FFE3CC' },
   recipeTitle: { fontSize: 13, fontWeight: '600', color: colors.ink },
   recipeMeta: { fontSize: 11, color: colors.inkSoft },
-  actionBtn: { paddingVertical: 7, paddingHorizontal: 14, borderRadius: radius.sm, backgroundColor: colors.orange },
+  actionBtn: {
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    borderRadius: radius.sm,
+    backgroundColor: colors.orange,
+  },
   actionBtnText: { color: colors.white, fontSize: 11, fontWeight: '600' },
-  removeBtn: { paddingVertical: 7, paddingHorizontal: 14, borderRadius: radius.sm, borderWidth: 1, borderColor: colors.line },
+  removeBtn: {
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: colors.line,
+  },
   removeBtnText: { color: colors.inkSoft, fontSize: 11, fontWeight: '600' },
   centeredNotice: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.lg },
-  hero: { width: '100%', height: 120, borderRadius: radius.md, backgroundColor: colors.orange, marginBottom: spacing.md },
+  hero: {
+    width: '100%',
+    height: 120,
+    borderRadius: radius.md,
+    backgroundColor: colors.orange,
+    marginBottom: spacing.md,
+  },
   offlineTitle: { fontSize: 16, fontWeight: '700', color: colors.ink, marginBottom: spacing.sm },
   offlineText: { fontSize: 12, color: colors.inkSoft, textAlign: 'center' },
 });

@@ -5,8 +5,12 @@ let dbInstance: SQLite.SQLiteDatabase | null = null;
 
 export async function getDb(): Promise<SQLite.SQLiteDatabase> {
   if (dbInstance) return dbInstance;
-  dbInstance = await SQLite.openDatabaseAsync('chefguru.db');
-  await dbInstance.execAsync(CREATE_TABLES_SQL);
+
+  const db = await SQLite.openDatabaseAsync('chefguru.db');
+  await db.execAsync('PRAGMA foreign_keys = ON;'); // Enable foreign key constraints
+  await db.execAsync(CREATE_TABLES_SQL); // Execute table creation SQL
+  dbInstance = db;
+
   return dbInstance;
 }
 

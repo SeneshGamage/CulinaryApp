@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing } from '../theme/colors';
 import { useAppStore } from '../store/useAppStore';
+import { signOut } from '../services/auth';
 
 function SettingsRow({ label, value, onPress, highlight }: any) {
   return (
@@ -17,6 +18,16 @@ function SettingsRow({ label, value, onPress, highlight }: any) {
 
 export default function ProfileScreen({ navigation }: any) {
   const role = useAppStore((s) => s.role);
+  const setRole = useAppStore((s) => s.setRole);
+  const setAuthenticated = useAppStore((s) => s.setAuthenticated);
+  const setChefApplicationStatus = useAppStore((s) => s.setChefApplicationStatus);
+
+  const onLogout = async () => {
+    await signOut();
+    setChefApplicationStatus('none');
+    setRole('user');
+    setAuthenticated(false);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -43,7 +54,7 @@ export default function ProfileScreen({ navigation }: any) {
       )}
 
       <SettingsRow label="Cook reminders" value="On ›" />
-      <SettingsRow label="Log out" />
+      <SettingsRow label="Log out" onPress={onLogout} />
     </SafeAreaView>
   );
 }
@@ -51,14 +62,22 @@ export default function ProfileScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white, padding: spacing.md },
   avatar: {
-    width: 74, height: 74, borderRadius: 37, backgroundColor: colors.orange,
-    alignSelf: 'center', marginBottom: spacing.sm,
+    width: 74,
+    height: 74,
+    borderRadius: 37,
+    backgroundColor: colors.orange,
+    alignSelf: 'center',
+    marginBottom: spacing.sm,
   },
   name: { fontSize: 17, fontWeight: '700', textAlign: 'center', color: colors.ink },
   sub: { fontSize: 12, color: colors.inkSoft, textAlign: 'center', marginBottom: spacing.lg },
   row: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingVertical: spacing.sm + 4, borderBottomWidth: 1, borderBottomColor: colors.line,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: spacing.sm + 4,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.line,
   },
   rowLabel: { fontSize: 13, color: colors.ink },
   rowValue: { fontSize: 13, color: colors.inkSoft },

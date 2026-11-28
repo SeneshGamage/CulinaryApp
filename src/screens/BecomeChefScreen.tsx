@@ -43,8 +43,13 @@ const styles = StyleSheet.create({
   intro: { fontSize: 12, color: colors.inkSoft, marginBottom: spacing.md },
   label: { fontSize: 11, fontWeight: '600', color: colors.ink, marginBottom: 5 },
   field: {
-    height: 44, borderRadius: radius.sm, backgroundColor: colors.cream,
-    borderWidth: 1, borderColor: colors.line, paddingHorizontal: spacing.md,
-    marginBottom: spacing.sm, color: colors.ink,
+    height: 44,
+    borderRadius: radius.sm,
+    backgroundColor: colors.cream,
+    borderWidth: 1,
+    borderColor: colors.line,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.sm,
+    color: colors.ink,
   },
 });

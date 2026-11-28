@@ -1,0 +1,52 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      native_build:
+        description: 'Also start a native Android preview build on EAS'
+        type: boolean
+        default: false
+
+concurrency:
+  group: cd-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    # Dormant until you add the repo variable ENABLE_EAS_DEPLOY = true
+    if: ${{ github.ref == 'refs/heads/main' && vars.ENABLE_EAS_DEPLOY == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Publish OTA update to the production channel
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message || 'manual run' }}
+        run: eas update --branch production --message "$COMMIT_MSG" --non-interactive
+
+      - name: Start native preview build (Android)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.native_build }}
+        run: eas build --platform android --profile preview --non-interactive --no-wait

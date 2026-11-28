@@ -21,9 +21,12 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-sqlite",
-      "expo-secure-store"
-    ]
+    "updates": {
+      "url": "https://u.expo.dev/<your-project-id>"
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "plugins": ["expo-sqlite", "expo-secure-store"]
   }
 }
