@@ -13,7 +13,6 @@ concurrency:
 permissions:
   contents: read
 
-  
 jobs:
   checks:
     name: checks
@@ -55,13 +54,11 @@ jobs:
 
       - name: Expo Doctor (informational only)
         run: npx expo-doctor
-        continue-on-error: true      
-        
+        continue-on-error: true
+
       - name: Publish OTA update to the production channel
         env:
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
           EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
           COMMIT_MSG: ${{ github.event.head_commit.message || 'manual run' }}
         run: eas update --branch production --message "$COMMIT_MSG" --non-interactive
-
-      
