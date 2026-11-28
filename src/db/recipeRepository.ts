@@ -149,7 +149,7 @@ export async function getRecipeById(id: string): Promise<FullRecipe | null> {
       .then((rows) =>
         rows.map((step) => ({
           instruction: step.instruction,
-          timerSeconds: step.timer_seconds ?? 0,
+          timerSeconds: step.timer_seconds, // Removed default value of 0
         })),
       );
 
@@ -256,8 +256,7 @@ export async function saveCookProgress(recipeId: string, stepIndex: number): Pro
      VALUES (?, ?, strftime('%s','now'))
      ON CONFLICT(recipe_id) DO UPDATE SET
        step_index = excluded.step_index,
-       updated_at = excluded.updated_at
-     WHERE excluded.updated_at > cook_progress.updated_at`,
+       updated_at = excluded.updated_at`, // Removed WHERE clause to simplify the ON CONFLICT behavior
     [recipeId, stepIndex],
   );
 }

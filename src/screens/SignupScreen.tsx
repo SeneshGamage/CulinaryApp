@@ -27,7 +27,7 @@ export default function SignupScreen({ navigation }: any) {
       const user = await signUp(email, password);
       setRole(user.role);
       setAuthenticated(true);
-      navigation.replace('MainTabs');
+      //navigation.replace('MainTabs');
     } catch (e: any) {
       setError(e.message ?? 'Something went wrong creating your account.');
     } finally {

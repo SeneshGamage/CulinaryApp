@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -17,18 +17,6 @@ import { useFocusData } from '../hooks/useFocusData';
 export default function HomeScreen({ navigation }: any) {
   const [query, setQuery] = useState('');
   const { data: recipes, loading } = useFocusData<LocalRecipeSummary[]>(listLocalRecipes, []);
-
-  // Refresh recipes when the screen regains focus
-  useEffect(() => {
-    return navigation.addListener('focus', () => {
-      // Add any necessary refresh logic here if needed
-    });
-  }, [navigation]);
-
-  // Render error state with retry button
-  {
-    /* Removed error handling block as 'error' is not part of the returned object */
-  }
 
   // Filter recipes based on the search query
   const filtered = useMemo(() => {

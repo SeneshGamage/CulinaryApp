@@ -27,7 +27,7 @@ export default function LoginScreen({ navigation }: any) {
       const user = await signIn(email, password);
       setRole(user.role);
       setAuthenticated(true);
-      navigation.replace('MainTabs');
+      //navigation.replace('MainTabs');
     } catch (e: any) {
       setError(e.message ?? 'Something went wrong signing in.');
     } finally {

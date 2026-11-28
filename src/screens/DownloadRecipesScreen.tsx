@@ -54,8 +54,12 @@ export default function DownloadRecipesScreen() {
   };
 
   const handleRemove = async (entry: CatalogEntry) => {
-    await removeDownloadedRecipe(entry.id);
-    setDownloadStates((prev) => ({ ...prev, [entry.id]: 'idle' }));
+    try {
+      await removeDownloadedRecipe(entry.id);
+      setDownloadStates((prev) => ({ ...prev, [entry.id]: 'idle' }));
+    } catch (e) {
+      console.error('Remove failed:', e);
+    }
   };
 
   if (!isOnline) {
