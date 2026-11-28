@@ -42,6 +42,10 @@ export async function signIn(email: string, password: string): Promise<CachedUse
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) throw error;
   if (!data.user) throw new Error('Sign in succeeded but no user was returned.');
+  if (!data.session) {
+    // Email confirmation is enabled in Supabase: the account exists but nobody is signed in yet.
+    throw new Error('Account created. Check your email to confirm it, then log in.');
+  }
 
   const user: CachedUser = { id: data.user.id, email: data.user.email ?? email, role: 'user' };
   await cacheUserProfile(user);

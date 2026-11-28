@@ -1,16 +1,24 @@
-import 'react-native-url-polyfill/auto';
-import { createClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createClient } from '@supabase/supabase-js';
 
-// Set these in app.config.js / .env — never hardcode real keys in source
-const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
-const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  // createClient throws on empty values, which would crash the app before the offline-first
+  // screens can even render. Warn loudly and fall back to placeholders instead.
+  console.warn('Supabase env vars are missing. Copy .env.example to .env and restart Expo.');
+}
+
+export const supabase = createClient(
+  SUPABASE_URL ?? 'https://placeholder.invalid',
+  SUPABASE_ANON_KEY ?? 'missing-key',
+  {
+    auth: {
+      storage: AsyncStorage,
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: false,
+    },
   },
-});
+);
